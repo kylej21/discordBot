@@ -30,6 +30,38 @@ var token = process.env.BRAWLAPI
 const BrawlStars = require("brawlstars.js")
 const brawlClient = new BrawlStars.Client(token);
 
+var nameMatches = {};
+var backNames = {}
+
+async function iam(msg, brawlUser){
+    (async() => {
+        //nameMatches[msg.author]=brawlUser;
+        const club= await brawlClient.getClub("#8YYRLYUG");
+        for(var i=0; i <club.memberCount;i++){            
+            if(club.members[i].name==brawlUser){
+                nameMatches[brawlUser]=msg.author.username;
+                backNames[msg.author.username]=brawlUser;
+                msg.reply("success");
+                return;
+            }
+        }
+        msg.reply("Your username is not in the club. Check for correct spelling");
+    })()
+}
+
+
+async function whois(msg,playerName){
+    (async() => {
+        var temp = backNames[playerName];
+        if (temp==undefined){
+            msg.channel.send("User: " + playerName + " has not yet registered their brawl name, or is not in the club. Make sure to type username not display name.")
+            return;
+        }
+        msg.channel.send(playerName + " is " + temp);        
+    })()
+}
+
+
 
 async function getMembers(msg){
 
@@ -101,6 +133,12 @@ async function runDate(msg){
 
 client.on('messageCreate',(msg) =>{    
     //make sure bots don't run the command
+    if(msg.content.substring(0,4)=="/iam"){
+        iam(msg,msg.content.substring(5));
+    }
+    if(msg.content.substring(0,6)=="/whois"){
+        whois(msg,msg.content.substring(7));
+    }
     if(msg.author.bot){
         return;
     }
@@ -124,7 +162,6 @@ client.on('messageCreate',(msg) =>{
         getBest(msg, msg.content.substring(9))
     }
 });
-
 
 
 
