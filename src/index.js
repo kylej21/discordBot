@@ -15,20 +15,59 @@ const {Client,IntentsBitField} = require("discord.js");
 //create sleep function
 const sleep = ms => new Promise(r => setTimeout(r, ms));   
 
+
+
+const client = new Client({
+    intents : [
+        IntentsBitField.Flags.Guilds,
+        IntentsBitField.Flags.GuildMembers,
+        IntentsBitField.Flags.GuildMessages,
+        IntentsBitField.Flags.MessageContent,
+        IntentsBitField.Flags.GuildScheduledEvents
+    ],
+});
+var token = process.env.BRAWLAPI
+const BrawlStars = require("brawlstars.js")
+const brawlClient = new BrawlStars.Client(token);
+
+
 async function getMembers(msg){
-    var token = process.env.BRAWLAPI
-    const BrawlStars = require("brawlstars.js")
-    const brawlClient = new BrawlStars.Client(token);
+
     (async() => {
         const playerClub = await brawlClient.getClub("#8YYRLYUG");
-        
         var ret = "";
         for(var i=0; i <playerClub.memberCount;i++){
-            ret += "#" + i+1 + ": " + playerClub.members[i].name + "  Trophies: " + playerClub.members[i].trophies +'\n';
+            ret += "#" + (i+1) + ": " + playerClub.members[i].name + "  Trophies: " + playerClub.members[i].trophies +" - role: " + 
+            playerClub.members[i].role + '\n';
         }
         msg.channel.send(ret);
     })()
 }
+
+async function getBest(msg,playerName){
+
+    (async() => {
+        const playerClub = await brawlClient.getClub("#8YYRLYUG");
+        for(var i=0; i <playerClub.memberCount;i++){
+            if(playerClub.members[i].name==playerName){
+                const returnVal = await brawlClient.getPlayer(playerClub.members[i].tag);
+                var maxTroph=0;
+                var maxBrawl="";
+                for(var j=0;j<returnVal.brawlerCount;j++){
+                    if(returnVal.brawlers[j].trophies > maxTroph){
+                        maxTroph= returnVal.brawlers[j].trophies;
+                        maxBrawl = returnVal.brawlers[j].name;
+                    }
+                } 
+
+            }
+        }
+        ret = ""
+        ret += playerName +"'s highest brawler is " + maxBrawl +" with " + maxTroph + " trophies.";
+        msg.channel.send(ret);
+    })()
+}
+
 
 async function runDate(msg){
     var date = new Date();
@@ -56,15 +95,9 @@ async function runDate(msg){
         }
     }
 }
-const client = new Client({
-    intents : [
-        IntentsBitField.Flags.Guilds,
-        IntentsBitField.Flags.GuildMembers,
-        IntentsBitField.Flags.GuildMessages,
-        IntentsBitField.Flags.MessageContent,
-        IntentsBitField.Flags.GuildScheduledEvents
-    ],
-});
+
+
+
 
 client.on('messageCreate',(msg) =>{    
     //make sure bots don't run the command
@@ -87,8 +120,13 @@ client.on('messageCreate',(msg) =>{
     if(msg.content == "/getMembers"){
         getMembers(msg);
     }
-    
+    if(msg.content.substring(0,8)=="/getBest"){
+        getBest(msg, msg.content.substring(9))
+    }
 });
+
+
+
 
 
 //Update your discord token to .env file to make the login work
