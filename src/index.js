@@ -4,7 +4,9 @@
 *       - Add User ID from discord and discord bot api token to a .env file 
 *       - type nodemon in the terminal and hit enter
 *
-*
+*       TO DO:
+*       - Add SQL database 
+*       - create supercell API to update weekly results to SQL db
 */
 require('dotenv').config();
 const {Client,IntentsBitField} = require("discord.js");
@@ -12,6 +14,21 @@ const {Client,IntentsBitField} = require("discord.js");
 
 //create sleep function
 const sleep = ms => new Promise(r => setTimeout(r, ms));   
+
+async function getMembers(msg){
+    var token = process.env.BRAWLAPI
+    const BrawlStars = require("brawlstars.js")
+    const brawlClient = new BrawlStars.Client(token);
+    (async() => {
+        const playerClub = await brawlClient.getClub("#8YYRLYUG");
+        
+        var ret = "";
+        for(var i=0; i <playerClub.memberCount;i++){
+            ret += "#" + i+1 + ": " + playerClub.members[i].name + "  Trophies: " + playerClub.members[i].trophies +'\n';
+        }
+        msg.channel.send(ret);
+    })()
+}
 
 async function runDate(msg){
     var date = new Date();
@@ -67,8 +84,12 @@ client.on('messageCreate',(msg) =>{
             msg.channel.send("Only Kyle can run that command")
         }
     }
+    if(msg.content == "/getMembers"){
+        getMembers(msg);
+    }
     
 });
+
 
 //Update your discord token to .env file to make the login work
 client.login(process.env.TOKEN);
