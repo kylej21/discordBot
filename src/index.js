@@ -50,7 +50,11 @@ const client = new Client({
 });
 
 client.on('messageCreate',(msg) =>{    
-    //check if mesage is the command
+    //make sure bots don't run the command
+    if(msg.author.bot){
+        return;
+    }
+    //check if message is the command
     if(msg.content=="/beginTime"){
         //check if the author is the admin president
         //if yes begin mega pig notis
