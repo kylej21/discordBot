@@ -55,6 +55,7 @@ client.on('messageCreate',(msg) =>{
         //check if the author is the admin president
         //if yes begin mega pig notis
         if(msg.author.id==process.env.OWNERID){
+            msg.channel.send("Beginning mega pig countdown reminders.")
             runDate(msg);
         }
         //if not reply so
