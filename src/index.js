@@ -1,5 +1,16 @@
+/*
+*
+*       MUST DO'S TO START CODE:
+*       - Add User ID from discord and discord bot api token to a .env file 
+*       - type nodemon in the terminal and hit enter
+*
+*
+*/
 require('dotenv').config();
 const {Client,IntentsBitField} = require("discord.js");
+
+
+//create sleep function
 const sleep = ms => new Promise(r => setTimeout(r, ms));   
 
 async function runDate(msg){
@@ -7,18 +18,21 @@ async function runDate(msg){
     while(true){
         if((date.getDay()==7&&date.getHours()==18)){
             msg.channel.send("@everyone Mega Pig ends soon. Get your attack in or risk being kicked.");
+            //sleep for 5 days
             await sleep(432000000);
             date = new Date();
             console.log("Day: " + date.getDate() + " Hour: " + date.getHours());
         }
         else if((date.getDay()==5&&date.getHours()==18)){
             msg.channel.send("@everyone Mega Pig is about to start. \n Number on contributer will get a promotion \n People who do not use all attacks might be kicked");
+            //sleep for 2 days
             await sleep(86400000);
             date = new Date();
             console.log("Day: " + date.getDate() + " Hour: " + date.getHours());
         }
         else{
             console.log("Day: " + date.getDate() + " Hour: " + date.getHours());
+            //sleep for one hour
             await sleep(3600000);
             date = new Date();
             console.log("Day: " + date.getDate() + " Hour: " + date.getHours());
